@@ -1,0 +1,80 @@
+---
+title: "ph"
+author: "Rachel"
+date: "2025-04-07"
+output: html_document
+---
+
+```{r}
+data = read.csv("~/Desktop/ph.csv")
+data
+```
+
+```{r}
+#head(data)
+#names(data)
+```
+
+```{r}
+subdat <- subset(data,
+                 select = c(black, female, everhadcancer, Education, age45p))
+names(subdat)
+subdat
+```
+```{r}
+subdat$everhadcancer<-relevel(factor(subdat$everhadcancer),"0")
+subdat$female<-as.factor(subdat$female)
+subdat$black<-as.factor(subdat$black)
+subdat$Education<-as.factor(subdat$Education)
+subdat$age45p<-as.factor(subdat$age45p)
+```
+
+```{r}
+mod1<-glm(everhadcancer~.,data=subdat,family=binomial())
+summary(mod1)
+```
+```{r}
+# Extract just coefficients (or intervals)
+coefficients(mod1)
+confint(mod1)
+
+#Exponentiation of betas (or intervals)
+exp(coefficients(mod1))
+exp(confint(mod1))
+```
+
+```{r}
+library(ggplot2)
+ggplot(subdat, aes(x = black)) +
+  geom_bar()
+
+ggplot(subdat, aes(x = female)) +
+  geom_bar()
+
+ggplot(subdat, aes(x = Education)) +
+  geom_bar()
+
+ggplot(subdat, aes(x = everhadcancer)) +
+  geom_bar()
+```
+```{r}
+subdat$Education = as.numeric(subdat$Education)
+subdat$overHS <- (subdat$Education >= 5)
+ggplot(subdat, aes(x = overHS)) +
+  geom_bar()
+```
+```{r}
+mod2<-glm(everhadcancer~.-Education, data=subdat,family=binomial())
+summary(mod2)
+```
+
+```{r}
+# Extract just coefficients (or intervals)
+coefficients(mod2)
+confint(mod2)
+
+#Exponentiation of betas (or intervals)
+exp(coefficients(mod2))
+exp(confint(mod2))
+```
+
